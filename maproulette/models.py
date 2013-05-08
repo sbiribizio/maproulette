@@ -41,6 +41,9 @@ class Challenge(Base):
     editors = Column(String)
     Index('idx_geom', polygon, postgresql_using='gist')
     Index('idx_run', run)
+    
+    # this is used for Challenge Types
+    types = {}
 
     def __init__(self, slug):
         self.slug = slug
@@ -59,7 +62,16 @@ class Challenge(Base):
                 'doneDlg': self.done_dialog,
                 'editors': self.editors
                 }
-        
+    
+    def selectType(self):
+        """Takes a challenge and returns the proper class
+        instantiation for it"""
+        c = self.types.get(self.challenge_type)
+        if not c:
+            # BAD THINGS HERE
+            pass
+        # This doesn't work yet because we don't have the db/session
+        return session.query(c).get(self.id)
 class Task(Base):
     __tablename__ = 'tasks'
     id = Column(String(80), primary_key=True)
