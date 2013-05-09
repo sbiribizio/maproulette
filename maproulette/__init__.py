@@ -35,6 +35,9 @@ app = Flask(__name__,
 app.config.from_pyfile('maproulette.cfg')
 app.config.from_pyfile('../secret.cfg')
 
+import views
+import models
+
 # connect flask app to server KV session store
 KVSessionExtension(store, app)
 

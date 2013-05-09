@@ -2,14 +2,13 @@
 
 from maproulette import app
 from flask.ext.sqlalchemy import SQLAlchemy
-from sqlalch.testapp import app
 from geoalchemy2.types import Geometry
 from random import random
 from datetime import datetime
 
 db = SQLAlchemy(app)
 
-class db.OSMUser(db.Model):
+class OSMUser(db.Model):
     id = db.Column(db.Integer, unique=True, primary_key=True)
     oauth_token = db.Column(db.String)
     oauth_secret = Column(db.String)
@@ -25,7 +24,7 @@ class db.OSMUser(db.Model):
 
 # a challenge is like 'fix all highway tags' and does not belong to anything
 # else - it has no foreign keys
-class db.Challenge(db.Model):
+class Challenge(db.Model):
     id = db.Column(db.Integer, unique=True, primary_key=True)
     slug = db.Column(db.String(72), primary_key=True)
     title = db.Column(db.String(128))
@@ -62,7 +61,7 @@ class db.Challenge(db.Model):
 
 # a task is like 'fix this highway here' and belongs to a challenge
 # and has actions associated with it
-class db.Task(db.Model):
+class Task(db.Model):
     id = db.Column(db.Integer, unique=True, primary_key=True)
     challenge_id = db.Column(db.Integer, db.ForeignKey('challenges.id'))
     location = db.Column(Geometry('POINT'))
@@ -90,7 +89,7 @@ class db.Task(db.Model):
         self.save()
 
 # actions are associated with tasks and belong to users
-class db.Action(db.Model):
+class Action(db.Model):
     id = db.Column(db.Integer, unique=True, primary_key=True)
     timestamp = db.Column(db.DateTime, default = datetime.datetime.now())
     challenge_id = db.Column(db.Integer, db.ForeignKey('challenges.id'))
