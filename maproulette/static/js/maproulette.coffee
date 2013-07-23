@@ -164,7 +164,7 @@ makeButton = (label, action) ->
   # Takes in a label and onclick action and returns a button div
   ###
   button = $('div').addClass("button")
-  button.attr {onclick: "nextUp({#action}"}
+  button.attr {onclick: 'nextUp({"#action"}'}
   button.content = label
   return button
 
