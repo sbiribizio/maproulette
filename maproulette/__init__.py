@@ -25,6 +25,3 @@ from maproulette import models, views, oauth
 
 # connect flask app to server KV session store
 KVSessionExtension(store, app)
-
-# Coffeescript enable the app
-coffee(app)
