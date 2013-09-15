@@ -1,69 +1,46 @@
 
-  var addGeoJSONLayer, ajaxErrorHandler, buttonAutoChallenge, buttonManualChallenge, challenge, changeMapLayer, clearTask, currentChallenge, currentTask, difficulty, dlgOpen, drawFeatures, editor, enableKeyboardShortcuts, geojsonLayer, getChallenge, getExtent, location, makeButton, makeDlg, map, markdown, mrErrorHandler, mr_attrib, msg, msgMovingOnToTheNextChallenge, msgTaskText, msgZoomInForEdit, nomToString, pageStartTime, revGeocode, revGeocodeOSMObj, root, selectedFeature, setDelay, showTask, tileAttrib, tileLayer, tileUrl, totalFixed, totalTasks, updateChallenge, updateStats;
+var addGeoJSONLayer, ajaxErrorHandler, buttonAutoChallenge, buttonManualChallenge, challenge, changeMapLayer, clearTask, currentChallenge, currentTask, difficulty, dlgOpen, drawFeatures, editor, enableKeyboardShortcuts, geojsonLayer, getChallenge, getExtent, location, makeButton, makeDlg, map, markdown, mrErrorHandler, mr_attrib, msg, msgMovingOnToTheNextChallenge, msgTaskText, msgZoomInForEdit, nomToString, pageStartTime, revGeocode, revGeocodeOSMObj, root, selectedFeature, setDelay, showTask, tileAttrib, tileLayer, tileUrl, totalFixed, totalTasks, updateChallenge, updateStats;
 
-  root = typeof exports !== "undefined" && exports !== null ? exports : this;
-
-  markdown = new Showdown.converter();
-
-  map = void 0;
-
-  geojsonLayer = null;
-
-  tileLayer = null;
-
-  tileUrl = "http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png";
-
-  tileAttrib = '© <a href="http://openstreetmap.org">OpenStreetMap</a> contributors';
-
-  currentChallenge = null;
-
-  currentTask = null;
-
-  selectedFeature = null;
-
-  editor = "";
-
-  difficulty = null;
-
-  location = null;
-
-  challenge = null;
-
-  totalTasks = 0;
-
-  totalFixed = 0;
-
-  pageStartTime = null;
-
-  msgMovingOnToTheNextChallenge = 'OK, moving right along...';
-
-  msgZoomInForEdit = "Please zoom in a little so we don't have to load a huge area from the API.";
-
-  mr_attrib = "<small>\n  <p>\n    thing by <a href='mailto:m@rtijn.org'>Martijn van Exel and Serge Wroclawski</a>\n  <p>\n</small>";
-
-  buttonAutoChallenge = {
+root = typeof exports !== "undefined" && exports !== null ? exports : this;
+markdown = new Showdown.converter();
+map = void 0;
+geojsonLayer = null;
+tileLayer = null;
+tileUrl = "http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png";
+tileAttrib = '© <a href="http://openstreetmap.org">OpenStreetMap</a> contributors';
+currentChallenge = null;
+currentTask = null;
+selectedFeature = null;
+editor = "";
+difficulty = null;
+location = null;
+challenge = null;
+totalTasks = 0;
+totalFixed = 0;
+pageStartTime = null;
+msgMovingOnToTheNextChallenge = 'OK, moving right along...';
+msgZoomInForEdit = "Please zoom in a little so we don't have to load a huge area from the API.";
+mr_attrib = "<small>\n  <p>\n    thing by <a href='mailto:m@rtijn.org'>Martijn van Exel and Serge Wroclawski</a>\n  <p>\n</small>";
+buttonAutoChallenge = {
     label: "Find a new challenge",
     action: "getNewChallenge()"
   };
-
-  buttonManualChallenge = {
+buttonManualChallenge = {
     label: "Let me choose a new challenge",
     action: 'window.location.href="/challenges/'
   };
-
-  buttonExitApp({
+buttonExitApp = {
     label: "Return to homepage",
     action: 'window.location.href="/"'
-  });
-
-  setDelay = function(seconds, func) {
+  };
+function setDelay(seconds, func) {
     /*
       # Wraps setTimeout to make it easiet to write in Coffeescript
     */
     return setTimeout(func, seconds * 1000);
-  };
+};
 
-  jQuery.fn.extend({
+jQuery.fn.extend({
     /*
       # Returns get parameters.
       #
@@ -122,7 +99,7 @@
     }
   });
 
-  clearTask = function() {
+function clearTask() {
     /*
       # Clear all the task-related variables in between tasks
     */
@@ -132,7 +109,7 @@
     return addGeoJSONLayer();
   };
 
-  getExtent = function(feature) {
+function getExtent(feature) {
     /*
       # Takes in a JSON feature and return a Leaflet LatLngBounds
     */
@@ -164,14 +141,14 @@
     }
   };
 
-  this.msgClose = function() {
+function msgClose() {
     /*
       # Close the msg box
     */
     return $("#msgBox").fadeOut();
   };
 
-  msg = function(html) {
+function msg(html) {
     /*
       # Display a msg (html) in the msgbox. Must be closed with msgClose()
     */
@@ -179,7 +156,7 @@
     return $("#msgBox").css("display", "block");
   };
 
-  msgTaskText = function() {
+function msgTaskText() {
     /*
       # Display the current task text in the msgbox
     */
@@ -188,7 +165,7 @@
     }
   };
 
-  makeButton = function(label, action) {
+function makeButton(label, action) {
     /*
       # Takes in a label and onclick action and returns a button div
     */
@@ -202,7 +179,7 @@
     return button;
   };
 
-  makeDlg = function(dlgData) {
+function makeDlg(dlgData) {
     /*
       # Takes dialog box data and returns a dialog box for nextUp actions
     */
@@ -221,7 +198,7 @@
     return dlg;
   };
 
-  dlgOpen = function(h) {
+function dlgOpen(h) {
     /*
       #  Display the data (html) in a dialog box. Must be closed with dlgClose()
     */
@@ -229,14 +206,14 @@
     return $("#dlgBox").css("display", "block");
   };
 
-  this.dlgClose = function() {
+function dlgClose() {
     /*
       # Closes the dialog box
     */
     return $("#dlgBox").fadeOut();
   };
 
-  ajaxErrorHandler = function(jqxhr, statusString, error) {
+function ajaxErrorHandler(jqxhr, statusString, error) {
     /*
       # Handle AJAX errors in this function (or hand them over to
       # mrErrorHandler if appropriate
@@ -255,7 +232,7 @@
     }
   };
 
-  mrErrorHandler = function(errorString) {
+function mrErrorHandler(errorString) {
     /*
       # This function takes in MapRoulette errors and handles them
     */
@@ -285,7 +262,7 @@
     return dlgOpen(dlg);
   };
 
-  nomToString = function(addr) {
+function nomToString(addr) {
     /*
       # Takes a geocode object returned from Nominatim and returns a
       # nicely formatted string
@@ -325,7 +302,7 @@
     }
   };
 
-  revGeocodeOSMObj = function(feature) {
+function revGeocodeOSMObj(feature) {
     /*
       # Reverse geocodes an OSM object as a geoJSON feature
     */
@@ -346,7 +323,7 @@
     return request.fail(ajaxErrorHandler);
   };
 
-  revGeocode = function() {
+function revGeocode() {
     /*
       # Reverse geocodes the center of the (currently displayed) map
     */
@@ -365,7 +342,7 @@
     return request.fail(ajaxErrorHandler);
   };
 
-  drawFeatures = function(features) {
+function drawFeatures(features) {
     /*
       # Draw the features onto the current geojson layer. Also pulls out
       # selected features
@@ -385,7 +362,7 @@
     return _results;
   };
 
-  showTask = function(task) {
+function showTask(task) {
     /*
       # Displays a task to the display and waits for the user prompt
     */
@@ -395,7 +372,7 @@
     return msgTaskText();
   };
 
-  getChallenge = function(id) {
+function getChallenge(id) {
     /*
       # Gets a specific challenge
     */
@@ -413,7 +390,7 @@
     return request.fail(ajaxErrorHandler);
   };
 
-  this.getNewChallenge = function(difficulty, near) {
+function getNewChallenge(difficulty, near) {
     /*
       # Gets a challenge based on difficulty and location
     */
@@ -435,7 +412,7 @@
     return request.fail(ajaxErrorHandler);
   };
 
-  this.getTask = function(near) {
+function getTask(near) {
     var request, url;
     if (near == null) {
       near = null;
@@ -459,7 +436,7 @@
     return request.fail(ajaxErrorHandler);
   };
 
-  changeMapLayer = function(layerUrl, layerAttrib) {
+function changeMapLayer(layerUrl, layerAttrib) {
     if (layerAttrib == null) {
       layerAttrib = tileAttrib;
     }
@@ -474,7 +451,7 @@
     return map.addLayer(tileLayer, true);
   };
 
-  addGeoJSONLayer = function() {
+function addGeoJSONLayer() {
     /*
       # Adds a GeoJSON layer to the map
     */
@@ -489,7 +466,7 @@
     return map.addLayer(geojsonLayer);
   };
 
-  this.nextUp = function(action) {
+function nextUp(action) {
     /*
       # Display a message that we're moving on to the next error, store
       # the result of the confirmation dialog in the database, and load
@@ -521,7 +498,7 @@
     return request.fail(ajaxErrorHandler);
   };
 
-  this.openIn = function(e) {
+function openIn(e) {
     /*
       # Open the currently displayed OSM objects in the selected editor (e)
     */
@@ -581,14 +558,14 @@
     return dlgOpen(currentChallenge.doneDlg);
   };
 
-  this.showHelp = function() {
+function showHelp() {
     /*
       # Show the about window
     */
     return dlgOpen("" + currentChallenge.help + "\n<p>" + mr_attrib + "</p>\n<p><div class='button' onClick=\"dlgClose()\">OK</div></p>", 0);
   };
 
-  updateStats = function(challenge) {
+function updateStats(challenge) {
     /*
       # Get the stats for the challenge and display the count of remaining
       # tasks
