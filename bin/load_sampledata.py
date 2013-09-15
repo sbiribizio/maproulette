@@ -1,8 +1,14 @@
+#!/usr/bin/env python
+
 from maproulette.models import Challenge, Task
 import simplejson as json
 from shapely.wkt import dumps
 from shapely.geometry import Point
 from geoalchemy2.types import Geometry
+import sys
+import os
+from sqlalchemy import create_engine   
+from sqlalchemy.orm import sessionmaker
 
 # This script loads a small set of fixtures into the MapRoulette database.
 # It consists of a Challenge object and 463 Task objects with point
@@ -13,12 +19,6 @@ from geoalchemy2.types import Geometry
 #
 # Right now (13/08/08), for this to work you need to patch Flask-SQLALchemy
 # as described here: https://github.com/mitsuhiko/flask-sqlalchemy/pull/89
-
-import sys
-import os
-from sqlalchemy import create_engine   
-from sqlalchemy.orm import sessionmaker
-
 
 def load_sampledata(path):
 
