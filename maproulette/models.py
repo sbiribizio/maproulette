@@ -21,10 +21,14 @@ db = SQLAlchemy(app)
 
 random.seed()
 
+
 def getrandom():
     return random.random()
 
+
 class User(db.Model):
+    """A MapRoulette User"""
+
     __tablename__ = 'users'
 
     id = db.Column(
@@ -62,6 +66,8 @@ class User(db.Model):
 
 
 class Challenge(db.Model):
+    """A MapRoulette Challenge"""
+
     __tablename__ = 'challenges'
 
     id = db.Column(
@@ -113,6 +119,8 @@ class Challenge(db.Model):
 
     @property
     def polygon(self):
+        """Retrieve the polygon for this challenge, or return the World if there is none"""
+
         if self.geom is not None:
             return to_shape(self.geom)
         else:
@@ -124,26 +132,35 @@ class Challenge(db.Model):
 
     @polygon.setter
     def polygon(self, shape):
+        """Set the polygon for the challenge from a Shapely geometry"""
+
         self.geom = from_shape(shape)
 
     polygon = synonym('geom', descriptor=polygon)
 
     @property
     def tasks_available(self):
+        """Return the number of tasks available for this challenge."""
+
         return Task.query.filter_by(
-            available=True, 
+            available=True,
             challenge_slug=self.slug).count()
 
     @property
     def islocal(self):
-        # If the challange has no geometry, it is global 
+        """Returns the localness of a challenge (is it small)"""
+
+        # If the challange has no geometry, it is global
         if self.geom is None:
             return False
         # otherwise get the area and compare against local threshold
         area = db.session.query(self.geom.ST_Area()).one()[0]
-        return (area <= app.config['MAX_SQ_DEGREES_FOR_LOCAL'])
+        return (area <= app.config['MAX_SQ_DEGREES_FOR_LOCAL'])        
+
 
 class Task(db.Model):
+    """A MapRoulette task"""
+
     __tablename__ = 'tasks'
 
     id = db.Column(
@@ -175,8 +192,10 @@ class Task(db.Model):
     actions = db.relationship(
         "Action",
         backref=db.backref("task"))
+    currentaction = db.Column(
+        db.String)
     instruction = db.Column(
-        db.String())
+        db.String)
     available = db.Column(
         db.Boolean)
     challenge = db.relationship(
@@ -191,28 +210,34 @@ class Task(db.Model):
     def __init__(self, challenge_slug, identifier):
         self.challenge_slug = challenge_slug
         self.identifier = identifier
-        self.actions.append(Action('created'))
+        self.append_action(Action('created'))
         self.available = True
 
     def __repr__(self):
         return '<Task %s>' % (self.identifier)
 
     @property
-    def current_action(self):
-        return self.actions[-1]
-
-    @property
     def location(self):
+        """Return the location for this task as a Shapely geometry"""
+
         return to_shape(self.geom)
 
     @location.setter
     def location(self, shape):
+        """Set the location for this task from a Shapely object"""
+
         self.geom = from_shape(shape)
 
     location = synonym('geom', descriptor=location)
 
+    def append_action(self, action):
+        self.actions.append(action)
+        self.currentaction = action.status
+        app.logger.debug('appended action %s to task %s' % (action, self.id))
 
 class TaskGeometry(db.Model):
+    """The collection of geometries (1+) belonging to a task"""
+
     __tablename__ = 'task_geometries'
     osmid = db.Column(
         db.BigInteger,
@@ -234,16 +259,22 @@ class TaskGeometry(db.Model):
 
     @property
     def geometry(self):
+        """Return the task geometry collection as a Shapely object"""
+
         return to_shape(self.geom)
 
     @geometry.setter
     def geometry(self, shape):
+        """Set the task geometry collection from a Shapely object"""
+
         self.geom = from_shape(shape)
 
     geometry = synonym('geom', descriptor=geometry)
 
 
 class Action(db.Model):
+    """An action on a task"""
+
     __tablename__ = 'actions'
 
     id = db.Column(
