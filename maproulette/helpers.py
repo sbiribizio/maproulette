@@ -1,12 +1,10 @@
 """Some helper functions"""
-from flask import abort, session, make_response
-from maproulette.models import Challenge, Task
+from flask import abort, session, make_response, current_app
+from maproulette.client.model import Challenge
 from maproulette.challengetypes import challenge_types
 from functools import wraps
 import random
 import json
-
-from maproulette import app
 
 
 def osmerror(error, description):
@@ -14,6 +12,32 @@ def osmerror(error, description):
 
     response = make_response("%s: %s" % (error, description), 400)
     return response
+
+def osmlogin_required(f):
+    """Require the caller to be authenticated against OSM"""
+
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        current_app.logger.debug('osm login required. app.debug is %s' % (current_app.debug, ))
+        if not current_app.debug and not 'osm_token' in session:
+            abort(403)
+        return f(*args, **kwargs)
+    return decorated_function
+
+
+def localonly(f):
+    """Restricts the view to only localhost. If there is a proxy, it
+    will handle that too"""
+
+    @wraps(f)
+    def decorated_function(*args, **hwargs):
+        # FIXME request is not defined here
+        if not request.headers.getlist("X-Forwarded-For"):
+            ip = request.remote_addr
+        else:
+            ip = request.headers.getlist("X-Forwarded-For")[0]
+        if not ip == "127.0.0.1":
+            abort(404)
 
 
 def get_or_abort(model, object_id, code=404):
@@ -37,68 +61,6 @@ def get_challenge_or_404(challenge_slug, instance_type=None,
         return challenge
     else:
         return c
-
-
-def get_task_or_404(challenge_slug, task_identifier):
-    """Return a task based on its challenge and task identifier"""
-
-    t = Task.query.filter(Task.identifier == task_identifier). \
-        filter(Task.challenge_slug == challenge_slug).first()
-    if not t:
-        abort(404)
-    return t
-
-
-def get_or_create_task(challenge, task_identifier):
-    """Return a task, either pull a new one or create a new one"""
-
-    task = (Task.identifier == task_identifier). \
-        filter(Task.challenge_slug == challenge.slug).first()
-    if not task:
-        task = Task(challenge.id, task_identifier)
-    return task
-
-
-def osmlogin_required(f):
-    """Require the caller to be authenticated against OSM"""
-
-    @wraps(f)
-    def decorated_function(*args, **kwargs):
-        app.logger.debug('osm login required. app.debug is %s' % (app.debug, ))
-        if not app.debug and not 'osm_token' in session:
-            abort(403)
-        return f(*args, **kwargs)
-    return decorated_function
-
-
-def localonly(f):
-    """Restricts the view to only localhost. If there is a proxy, it
-    will handle that too"""
-
-    @wraps(f)
-    def decorated_function(*args, **hwargs):
-        # FIXME request is not defined here
-        if not request.headers.getlist("X-Forwarded-For"):
-            ip = request.remote_addr
-        else:
-            ip = request.headers.getlist("X-Forwarded-For")[0]
-        if not ip == "127.0.0.1":
-            abort(404)
-
-
-def get_random_task(challenge):
-    """Get a random task"""
-
-    rn = random.random()
-    t = Task.query.filter(Task.challenge_slug == challenge.slug,
-                          Task.random <= rn).order_by(
-                          Task.random.desc()).first()
-    if not t:
-        t = Task.query.filter(Task.challenge_slug == challenge.slug,
-                              Task.random > rn).order_by(
-                              Task.random).first()
-    return t
-
 
 class GeoPoint(object):
     """A geo-point class for use as a validation in the req parser"""

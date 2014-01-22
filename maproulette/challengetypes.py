@@ -1,6 +1,6 @@
 """This module contains the various challenge types"""
 
-from maproulette.models import Challenge
+from maproulette.client.model import Challenge
 import maproulette.buttons as buttons
 from flask.ext.restful import fields
 

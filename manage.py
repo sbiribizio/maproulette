@@ -5,7 +5,7 @@ import sys
 import subprocess
 from flask.ext.script import Manager, Server
 from maproulette import app
-from maproulette.models import db
+from maproulette.client.models import db
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
