@@ -1,3 +1,5 @@
+/** @jsx React.DOM */
+
 // get URL parameters
 // http://stackoverflow.com/a/979995
 var Q = (function () {
@@ -599,9 +601,12 @@ var MRManager = (function () {
           $('controlpanel').fadeOut();
           $('.donedialog').fadeOut({
             complete: function() {
-              var changeChallengeButton = "<div class='button' onclick='MRManager.presentChallengeSelectionDialog()'>Pick another challenge</div>";
-              var dialogHTML = "<p>That challge has no more work left to do<p>" + challengeChangeButton;
-              $('.donedialog').html(dialogHTML).fadeIn();
+              React.renderComponent(
+                <p>That challenge has no more work left to do</p>
+                <Button action="MRManager.presentChallengeSelectionDialog()">
+                  Pick another challenge
+                </Button>, $('.donedialog'));
+              $('.donedialog')..fadeIn();
             }
           });
         };
@@ -637,19 +642,25 @@ var MRManager = (function () {
         var presentChallengeHelp = function () {
             $('.donedialog').fadeOut({
                 complete: function () {
-                    var OKButton = "<div class='button' onclick='MRManager.readyToEdit()'>OK</div>";
-                    var helpHTML = "<h1>" + challenge.title + " Help</h1>" +
-                        "<div>" + challenge.help + "</div>" + OKButton;
-                    $('.donedialog').html(helpHTML).fadeIn();
+                  React.renderComponent(
+                    <challengeHelpDialog challenge=challenge>,
+                    $(".donedialog"));
+                  $('.donedialog').fadeIn();
                 }
             });
         };
 
         var presentWelcomeDialog = function () {
-            $('.donedialog').fadeOut();
-            var OKButton = '<div class=\'button\' onclick="location.reload();location.href=\'/signin\'">Sign in</div>';
-            var welcomeHTML = "<h1>Welcome to MapRoulette</h1>" + "<p>Sign in with OpenStreetMap to play MapRoulette<p>" + OKButton;
-            $('.donedialog').html(welcomeHTML).fadeIn();
+            $('.donedialog').fadeOut({
+              complete: function() {
+                React.renderComponent(
+                  <h1>Welcome to MapRoulette</h1>
+                  <p>Sign in with OpenStreetMap to play MapRoulette<p>
+                  <Button action="location.reload();location.href='/signin'">Sign in</Button>,
+                $(".donedialog"));
+                $(".donedialog").fadeIn();
+              }
+            });
         };
 
         var presentChallengeDialog = function () {
@@ -901,3 +912,32 @@ function init(elemName) {
     $('.controlpanel').fadeOut();
     MRManager.init(elemName);
 }
+
+var Button = React.createClass({
+  render: function(){
+    return (
+      <div className="button"
+           onClick={this.props.action}>
+        {this.props.children}
+      </div> 
+);
+}});
+
+var Dialog = React.createClass({
+  render: function(){
+    return (
+      <div className="challengeBox">
+        {this.props.children}
+      </div>
+    );
+  }
+});
+
+var challengeHelpDialog = React.createClass({
+  render: function(){
+    return (
+      <h1>{this.props.challenge.title} Help</h1>
+      <div>{this.props.challenge.help}</div>
+      <Button action="MRMangaer.readyToEdit()">OK</Button>);
+  }
+});
