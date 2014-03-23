@@ -313,7 +313,7 @@ var MRManager = (function () {
                 else presentChallengeDialog();
             } else {
                 // present a friendly welcome
-              $('.donedialog').fadeOut({
+              $('.dialog').fadeOut({
                 complete: function() {
                   React.renderComponent(
                       <h1>Welcome to MapRoulette</h1>
@@ -321,8 +321,8 @@ var MRManager = (function () {
                       <Button onClick={location.reload();location.href="/signin"}
                     Sign in
                     </Button>,
-                    $(".donedialog"));
-                  $(".donedialog").fadeIn();
+                    $(".dialog"));
+                  $(".dialog").fadeIn();
                 }
               });
             }
@@ -511,7 +511,7 @@ q                    task = data;
 
         var nextTask = function (action) {
             // make the done dialog disappear if it is there
-            $('.donedialog').fadeOut();
+            $('.dialog').fadeOut();
             // update the outgoing task
             updateTask(action);
             task = {};
@@ -563,29 +563,29 @@ q                    task = data;
         var presentDoneDialog = function () {
           React.renderComponent(
             <DoneDialog dialog=DefaultDoneDialog />,
-            $('.donedialog'));
-          $('.donedialog').fadeIn();
+            $('.dialog'));
+          $('.dialog').fadeIn();
         };
-        
+
 
 
         var presentChallengeComplete = function() {
           $('controlpanel').fadeOut();
-          $('.donedialog').fadeOut({
+          $('.dialog').fadeOut({
             complete: function() {
               React.renderComponent(
                 <p>That challenge has no more work left to do</p>
                 <Button onClick={MRMangaer.presentChallengeSelectionDialog()}>
                   Pick another challenge
-                </Button>, $('.donedialog'));
-              $('.donedialog')..fadeIn();
+                </Button>, $('.dialog'));
+              $('.dialog')..fadeIn();
             }
           });
         };
 
         var presentChallengeSelectionDialog = function () {
             $('controlpanel').fadeOut();
-            $('.donedialog').fadeOut({
+            $('.dialog').fadeOut({
                 complete: function () {
                     if (challenges.length == 0) {
                         $.ajax({
@@ -593,8 +593,8 @@ q                    task = data;
                             success: function (data) {
                                 challenges = data;
                                 React.renderComponent(
-                                  <ChallengeSelectionDialog challenges=challenges />, $(".donedialog"));
-                                $('.donedialog').fadeIn();
+                                  <ChallengeSelectionDialog challenges=challenges />, $(".dialog"));
+                                $('.dialog').fadeIn();
                             },
                             error: function (jqXHR, textStatus, errorThrown) {
                                 console.log('ajax error')
@@ -602,27 +602,27 @@ q                    task = data;
                         });
                     } else {
                         React.renderComponent(
-                                  <ChallengeSelectionDialog challenges=challenges />, $(".donedialog"));
-                        $('.donedialog').fadeIn();
+                                  <ChallengeSelectionDialog challenges=challenges />, $(".dialog"));
+                        $('.dialog').fadeIn();
                     };
                 }
             });
         };
 
         var presentChallengeHelp = function () {
-            $('.donedialog').fadeOut({
+            $('.dialog').fadeOut({
                 complete: function () {
                   React.renderComponent(
                     <challengeHelpDialog challenge=challenge>,
-                    $(".donedialog"));
-                  $('.donedialog').fadeIn();
+                    $(".dialog"));
+                  $('.dialog').fadeIn();
                 }
             });
         };
 
         var presentChallengeDialog = function () {
             if (!challenge.slug) selectChallenge();
-            $('.donedialog').fadeOut({
+            $('.dialog').fadeOut({
                 complete: function () {
                     React.renderComponent(
                       <h1>Welcome to MapRoulette</h1>
@@ -630,15 +630,15 @@ q                    task = data;
                       <h2>{challenge.title}</h2>
                       <p>{challenge.description}</p>
                       <Button onClick={MRManager.readyToEdit()}>Let\'s go!</Button>
-                      <Button onClick={MRManager.presentChallengeHelp()}>More help</Button>, $(".donedialog")
+                      <Button onClick={MRManager.presentChallengeHelp()}>More help</Button>, $(".dialog")
                                     );
-                    $('.donedialog').fadeIn();
+                    $('.dialog').fadeIn();
                 }
             });
         };
 
         var readyToEdit = function () {
-            $('.donedialog').fadeOut();
+            $('.dialog').fadeOut();
             $('.controlpanel').fadeIn();
             if (!task.identifier) getAndShowTask();
         };
@@ -668,7 +668,7 @@ q                    task = data;
 
         var userPickChallenge = function (slug) {
             slug = decodeURI(slug);
-            $('.donedialog').fadeOut({
+            $('.dialog').fadeOut({
                 complete: function () {
                     $('.controlpanel').fadeIn()
                 }
@@ -698,7 +698,7 @@ q                    task = data;
                 MRManager.openTaskInJosm()
             });
             $(document).bind('keypress', 'esc', function () {
-                $('.donedialog').fadeOut()
+                $('.dialog').fadeOut()
             });
 
         }
@@ -897,7 +897,7 @@ var DoneDialog = React.createClass({
     return (
       <div class="text">{this.props.text}</div>
       {buttonArray}
-    );                                         
+    );
   }
 });
 
