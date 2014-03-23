@@ -92,38 +92,11 @@ var MRNotifier = function () {
 
 var DefaultDoneDialog = {
     text: "This area is being loaded in your editor. Did you fix it?",
-    buttons: ""
+    buttons: [{"label": "I fixed it!", "action": "fixed"},
+              {"label": "Too difficult/Couldn't see", "action": "skipped"},
+              {"label": "It was not an error", "action": "falsepositive"},
+              {"label": "Someone beat me to it", "action": "alreadyfixed"}] 
 };
-
-var MRButtons = function () {
-    var buttonTypes = {
-        'fixed': 'I fixed it!',
-        'skipped': 'Too difficult / Couldn\'t see',
-        'falsepositive': 'It was not an error',
-        'alreadyfixed': 'Someone beat me to it'
-    };
-
-    var makeButton = function (buttonType) {
-        if (!(buttonType in buttonTypes)) {
-            return false
-        }
-        return '<div class=\'button\' onClick=MRManager.nextTask(\'' + buttontype + '\') id=\'' + buttonType + '\'>' + buttonTypes[buttonType] + '</div>';
-    };
-
-    var makeButtons = function () {
-        var buttonHTML = '';
-        for (key in buttonTypes) {
-            buttonHTML += '<div class=\'button\' onClick=MRManager.nextTask(\'' + key + '\') id=\'' + key + '\'>' + buttonTypes[key] + '</div>\n';
-        }
-        return buttonHTML;
-    };
-
-    return {
-        makeButton: makeButton,
-        makeButtons: makeButtons
-    };
-
-}();
 
 var MRHelpers = (function () {
 
@@ -577,25 +550,12 @@ var MRManager = (function () {
         };
 
         var presentDoneDialog = function () {
-            var d = DefaultDoneDialog;
-
-            // if there is no done dialog info, bail
-            // FIXME we should be reverting to a default
-            if (typeof d === 'undefined') {
-                return false
-            }
-            var dialogHTML = '<div class=\'text\'>' + d.text + '</div>';
-
-            if (typeof d.buttons === 'string' && d.buttons.length > 0) {
-                var buttons = d.buttons.split('|');
-                for (var i = 0; i < buttons.length; i++) {
-                    dialogHTML += MRButtons.makeButton(buttons[i]);
-                }
-            } else {
-                dialogHTML += MRButtons.makeButtons();
-            }
-            $('.donedialog').html(dialogHTML).fadeIn();
+          React.renderComponent(
+            <DoneDialog dialog=DefaultDoneDialog />,
+            $('.donedialog'));
+          $('.donedialog').fadeIn();
         };
+        
 
         var presentChallengeComplete = function() {
           $('controlpanel').fadeOut();
@@ -603,7 +563,7 @@ var MRManager = (function () {
             complete: function() {
               React.renderComponent(
                 <p>That challenge has no more work left to do</p>
-                <Button action="MRManager.presentChallengeSelectionDialog()">
+                <Button onClick={MRMangaer.presentChallengeSelectionDialog()}>
                   Pick another challenge
                 </Button>, $('.donedialog'));
               $('.donedialog')..fadeIn();
@@ -656,7 +616,9 @@ var MRManager = (function () {
                 React.renderComponent(
                   <h1>Welcome to MapRoulette</h1>
                   <p>Sign in with OpenStreetMap to play MapRoulette<p>
-                  <Button action="location.reload();location.href='/signin'">Sign in</Button>,
+                  <Button onClick={location.reload();location.href="/signin"}
+                    Sign in
+                  </Button>,
                 $(".donedialog"));
                 $(".donedialog").fadeIn();
               }
@@ -917,27 +879,29 @@ var Button = React.createClass({
   render: function(){
     return (
       <div className="button"
-           onClick={this.props.action}>
+           onClick={this.props.onClick}>
         {this.props.children}
       </div> 
 );
 }});
 
-var Dialog = React.createClass({
-  render: function(){
-    return (
-      <div className="challengeBox">
-        {this.props.children}
-      </div>
-    );
-  }
-});
-
-var challengeHelpDialog = React.createClass({
+var ChallengeHelpDialog = React.createClass({
   render: function(){
     return (
       <h1>{this.props.challenge.title} Help</h1>
       <div>{this.props.challenge.help}</div>
-      <Button action="MRMangaer.readyToEdit()">OK</Button>);
+      <Button onClick={MRMangaer.readyToEdit()}>OK</Button>);
   }
 });
+
+var DoneDialog = React.createClass({
+  render: function(){
+    var buttonArray = this.props.buttons.map(function(button) {
+      return <Button onClick={MRMangaer.nextTask(this.props.action)}>{this.props.label}</Button>};)
+    return (
+      <div class="text">{this.props.text}</div>
+      {buttonArray}
+    );                                         
+  }
+});
+
