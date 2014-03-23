@@ -95,7 +95,7 @@ var DefaultDoneDialog = {
     buttons: [{"label": "I fixed it!", "action": "fixed"},
               {"label": "Too difficult/Couldn't see", "action": "skipped"},
               {"label": "It was not an error", "action": "falsepositive"},
-              {"label": "Someone beat me to it", "action": "alreadyfixed"}] 
+              {"label": "Someone beat me to it", "action": "alreadyfixed"}]
 };
 
 var MRHelpers = (function () {
@@ -324,7 +324,7 @@ var MRManager = (function () {
                     $(".donedialog"));
                   $(".donedialog").fadeIn();
                 }
-              }); 
+              });
             }
         };
 
@@ -566,7 +566,7 @@ q                    task = data;
             $('.donedialog'));
           $('.donedialog').fadeIn();
         };
-        
+
 
         var presentChallengeComplete = function() {
           $('controlpanel').fadeOut();
@@ -592,7 +592,7 @@ q                    task = data;
                             success: function (data) {
                                 challenges = data;
                                 React.renderComponent(
-                                  <ChallengeSelectionDialog challenges=challenges />, $(".donedialog");
+                                  <ChallengeSelectionDialog challenges=challenges />, $(".donedialog"));
                                 $('.donedialog').fadeIn();
                             },
                             error: function (jqXHR, textStatus, errorThrown) {
@@ -601,7 +601,7 @@ q                    task = data;
                         });
                     } else {
                         React.renderComponent(
-                                  <ChallengeSelectionDialog challenges=challenges />, $(".donedialog");
+                                  <ChallengeSelectionDialog challenges=challenges />, $(".donedialog"));
                         $('.donedialog').fadeIn();
                     };
                 }
@@ -623,14 +623,15 @@ q                    task = data;
             if (!challenge.slug) selectChallenge();
             $('.donedialog').fadeOut({
                 complete: function () {
-                    var OKButton = "<div class='button' onclick='MRManager.readyToEdit()'>Let's go!</div>";
-                    var helpButton = "<div class='button' onclick='MRManager.presentChallengeHelp()'>More help</div>";
-                    var changeChallengeButton = "<div class='button' onclick='MRManager.presentChallengeSelectionDialog()'>Pick another challenge</div>";
-                    var dialogHTML = "<h1>Welcome to MapRoulette!</h1>" +
-                        "<p>You will be working on this challenge:</p>" +
-                        "<h2>" + challenge.title + "</h2>" +
-                        "<p>" + challenge.description + "</p>" + OKButton + helpButton + changeChallengeButton;
-                    $('.donedialog').html(dialogHTML).fadeIn();
+                    React.renderComponent(
+                      <h1>Welcome to MapRoulette</h1>
+                      <p>You will be working on challenge:</p>
+                      <h2>{challenge.title}</h2>
+                      <p>{challenge.description}</p>
+                      <Button onClick={MRManager.readyToEdit()}>Let's go!</Button>
+                      <Button onClick={MRManager.presentChallengeHelp()}>More help</Button>, $(".donedialog")
+                                    );
+                    $('.donedialog').fadeIn();
                 }
             });
         };
@@ -875,7 +876,7 @@ var Button = React.createClass({
       <div className="button"
            onClick={this.props.onClick}>
         {this.props.children}
-      </div> 
+      </div>
 );
 }});
 
@@ -895,7 +896,7 @@ var DoneDialog = React.createClass({
     return (
       <div class="text">{this.props.text}</div>
       {buttonArray}
-    );                                         
+    );
   }
 });
 
