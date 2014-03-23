@@ -566,6 +566,7 @@ q                    task = data;
             $('.donedialog'));
           $('.donedialog').fadeIn();
         };
+        
 
 
         var presentChallengeComplete = function() {
@@ -896,7 +897,7 @@ var DoneDialog = React.createClass({
     return (
       <div class="text">{this.props.text}</div>
       {buttonArray}
-    );
+    );                                         
   }
 });
 
