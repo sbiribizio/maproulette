@@ -1,6 +1,53 @@
 /** @jsx React.DOM */
 
-// get URL parameters
+// React Components
+
+var Button = React.createClass({
+  render: function(){
+    return (
+      <div className="button"
+           onClick={this.props.onClick}>
+        {this.props.children}
+      </div>
+);
+}});
+
+var ChallengeHelpDialog = React.createClass({
+  render: function(){
+    return (
+      <h1>{this.props.challenge.title} Help</h1>
+      <div>{this.props.challenge.help}</div>
+      <Button onClick={MRMangaer.readyToEdit()}>OK</Button>);
+  }
+});
+
+var DoneDialog = React.createClass({
+  render: function(){
+    var buttonArray = this.props.buttons.map(function(button) {
+      return <Button onClick={MRMangaer.nextTask(this.props.action)}>{this.props.label}</Button>};)
+    return (
+      <div class="text">{this.props.text}</div>
+      {buttonArray}
+    );
+  }
+});
+
+var ChallengeSelectionDialog = React.createClass({
+  render: function() {
+    challengesArray = this.props.challenges.map(function(challenge) {
+      return (<div className="challengeBox"><h3>{challenge.title}</h3>
+                <p>challenge.blurb</p>
+                <Button onClick={MRMangaer.userPickChallenge(encodeURI(challenge.slug))}>
+                Work on this challenge!</div></div>);
+    return (<h2>Pick a different challenge</h2>
+            {challengesArray});
+    }
+  );
+ }
+});
+
+
+    // get URL parameters
 // http://stackoverflow.com/a/979995
 var Q = (function () {
     // This function is anonymous, is executed immediately and
@@ -871,49 +918,6 @@ function init(elemName) {
     MRManager.init(elemName);
 }
 
-var Button = React.createClass({
-  render: function(){
-    return (
-      <div className="button"
-           onClick={this.props.onClick}>
-        {this.props.children}
-      </div>
-);
-}});
-
-var ChallengeHelpDialog = React.createClass({
-  render: function(){
-    return (
-      <h1>{this.props.challenge.title} Help</h1>
-      <div>{this.props.challenge.help}</div>
-      <Button onClick={MRMangaer.readyToEdit()}>OK</Button>);
-  }
-});
-
-var DoneDialog = React.createClass({
-  render: function(){
-    var buttonArray = this.props.buttons.map(function(button) {
-      return <Button onClick={MRMangaer.nextTask(this.props.action)}>{this.props.label}</Button>};)
-    return (
-      <div class="text">{this.props.text}</div>
-      {buttonArray}
-    );
-  }
-});
-
-var ChallengeSelectionDialog = React.createClass({
-  render: function() {
-    challengesArray = this.props.challenges.map(function(challenge) {
-      return (<div className="challengeBox"><h3>{challenge.title}</h3>
-                <p>challenge.blurb</p>
-                <Button onClick={MRMangaer.userPickChallenge(encodeURI(challenge.slug))}>
-                Work on this challenge!</div></div>);
-    return (<h2>Pick a different challenge</h2>
-            {challengesArray});
-    }
-  );
- }
-});
 
 
 
