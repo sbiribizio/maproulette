@@ -312,8 +312,19 @@ var MRManager = (function () {
                 if (parseHash()) readyToEdit();
                 else presentChallengeDialog();
             } else {
-                // a friendly welcome
-                presentWelcomeDialog();
+                // present a friendly welcome
+              $('.donedialog').fadeOut({
+                complete: function() {
+                  React.renderComponent(
+                      <h1>Welcome to MapRoulette</h1>
+                      <p>Sign in with OpenStreetMap to play MapRoulette<p>
+                      <Button onClick={location.reload();location.href="/signin"}
+                    Sign in
+                    </Button>,
+                    $(".donedialog"));
+                  $(".donedialog").fadeIn();
+                }
+              }); 
             }
         };
 
@@ -420,7 +431,7 @@ var MRManager = (function () {
                 url: '/api/challenge/' + challenge.slug + '/task' + constructUrlParameters(assign),
                 async: false,
                 success: function (data) {
-                    task = data;
+q                    task = data;
                     if (['fixed', 'validated', 'falsepositive', 'notanerror'].indexOf(task.currentaction) > -1) {
                         setTimeout(function () {
                             notify.play('This task is already fixed, or it was marked as not an error.', {
@@ -605,21 +616,6 @@ var MRManager = (function () {
                     $(".donedialog"));
                   $('.donedialog').fadeIn();
                 }
-            });
-        };
-
-        var presentWelcomeDialog = function () {
-            $('.donedialog').fadeOut({
-              complete: function() {
-                React.renderComponent(
-                  <h1>Welcome to MapRoulette</h1>
-                  <p>Sign in with OpenStreetMap to play MapRoulette<p>
-                  <Button onClick={location.reload();location.href="/signin"}
-                    Sign in
-                  </Button>,
-                $(".donedialog"));
-                $(".donedialog").fadeIn();
-              }
             });
         };
 
