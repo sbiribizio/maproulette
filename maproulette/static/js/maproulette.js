@@ -628,7 +628,7 @@ q                    task = data;
                       <p>You will be working on challenge:</p>
                       <h2>{challenge.title}</h2>
                       <p>{challenge.description}</p>
-                      <Button onClick={MRManager.readyToEdit()}>Let's go!</Button>
+                      <Button onClick={MRManager.readyToEdit()}>Let\'s go!</Button>
                       <Button onClick={MRManager.presentChallengeHelp()}>More help</Button>, $(".donedialog")
                                     );
                     $('.donedialog').fadeIn();
