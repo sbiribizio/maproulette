@@ -580,20 +580,18 @@ var MRManager = (function () {
                             url: "/api/challenges",
                             success: function (data) {
                                 challenges = data;
-                                cancelButton = "<div class='button cancel' onclick='MRManager.readyToEdit()'>Nevermind</div>";
-                                dialogHTML = "<h2>Pick a different challenge</h2>";
-                                for (c in challenges) {
-                                    dialogHTML += "<div class=\'challengeBox\'><h3>" + challenges[c].title + "</h3><p>" + challenges[c].blurb + "<div class='button' onclick='MRManager.userPickChallenge(encodeURI(\"" + challenges[c].slug + "\"))'>Work on this challenge!</div></div>";
-                                };
-                                dialogHTML += "<div class='button' onClick=MRManager.readyToEdit()>Nevermind</div";
-                                $('.donedialog').html(dialogHTML).fadeIn();
+                                React.renderComponent(
+                                  <ChallengeSelectionDialog challenges=challenges />, $(".donedialog");
+                                $('.donedialog').fadeIn();
                             },
                             error: function (jqXHR, textStatus, errorThrown) {
                                 console.log('ajax error')
                             }
                         });
                     } else {
-                        $('.donedialog').html(dialogHTML).fadeIn();
+                        React.renderComponent(
+                                  <ChallengeSelectionDialog challenges=challenges />, $(".donedialog");
+                        $('.donedialog').fadeIn();
                     };
                 }
             });
@@ -904,4 +902,20 @@ var DoneDialog = React.createClass({
     );                                         
   }
 });
+
+var ChallengeSelectionDialog = React.createClass({
+  render: function() {
+    challengesArray = this.props.challenges.map(function(challenge) {
+      return (<div className="challengeBox"><h3>{challenge.title}</h3>
+                <p>challenge.blurb</p>
+                <Button onClick={MRMangaer.userPickChallenge(encodeURI(challenge.slug))}>
+                Work on this challenge!</div></div>);
+    return (<h2>Pick a different challenge</h2>
+            {challengesArray});
+    }
+  );
+ }
+});
+
+
 
