@@ -1,0 +1,3 @@
+{"instruction": "aree aperte", "geometries": {"type": "FeatureCollection", "features": [{"geometry": {"type": "LineString", "coordinates": [[13.
+161081, 43.384097], [13.161234, 43.3839319]]}, "type": "Feature", "properties": {"osmid": 43789075}}, {"geometry": {"type": "LineString", "coord
+inates": [[12.9759934, 43.6080453], [12.9759059, 43.6079922]]}, "type": "Feature", "properties": {"osmid": 203905983}}]}}
